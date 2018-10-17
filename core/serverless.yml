@@ -1,0 +1,15 @@
+service: appnamecore
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: us-east-1
+
+custom:
+  ${file(custom.yml)}
+
+resources:
+  - ${file(cognito.yml)}
+  - ${file(api.yml)} 
+  - ${file(website.yml)} 
+  - ${file(aurora.yml)}

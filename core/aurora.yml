@@ -1,0 +1,95 @@
+#This basic template can be used for all the RDS database type. 
+Resources:
+  VPCSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupName: "RDSSecurityGroup"
+      GroupDescription: "Security group for the database cluster"
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+      VpcId: ${self:custom.vpcConfig.${opt:stage, 'dev'}.vpcId}
+
+  RDSSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties: 
+      DBSubnetGroupDescription: "Subnets for the RDS"
+      DBSubnetGroupName: "${self:service}-${opt:stage, 'dev'}-subnetgroup"
+      SubnetIds:  
+        ${self:custom.vpcConfig.${opt:stage, 'dev'}.subnetId}
+
+  RDSCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      DBClusterIdentifier: "${self:service}-${opt:stage, 'dev'}-cluster"
+      DatabaseName: ${self:custom.rds.DatabaseName}
+      MasterUsername: ${self:custom.rds.${opt:stage, 'dev'}.username}
+      MasterUserPassword: ${self:custom.rds.${opt:stage, 'dev'}.password}
+      Engine: aurora
+      DBSubnetGroupName: 
+        Ref: RDSSubnetGroup      
+      # DBClusterParameterGroupName:
+      #   Ref: RDSDBClusterParameterGroup
+      VpcSecurityGroupIds: 
+        - Ref: VPCSecurityGroup
+
+  RDSDBInstance1:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBSubnetGroupName: 
+        Ref: RDSSubnetGroup   
+      # DBParameterGroupName:
+      #   Ref: RDSDBParameterGroup
+      Engine: aurora
+      DBClusterIdentifier:
+        Ref: RDSCluster
+      PubliclyAccessible: 'true'
+      DBInstanceClass: db.t2.small
+  RDSDBInstance2:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBSubnetGroupName: 
+        Ref: RDSSubnetGroup   
+      # DBParameterGroupName:
+      #   Ref: RDSDBParameterGroup
+      Engine: aurora
+      DBClusterIdentifier:
+        Ref: RDSCluster
+      PubliclyAccessible: 'true'
+      DBInstanceClass: db.t2.small
+
+  # RDSDBClusterParameterGroup:
+  #   Type: AWS::RDS::DBClusterParameterGroup
+  #   Properties:
+  #     Description: CloudFormation Sample Aurora Cluster Parameter Group
+  #     Family: aurora5.6
+  #     Parameters:
+  #       time_zone: US/Eastern
+  # RDSDBParameterGroup:
+  #   Type: AWS::RDS::DBParameterGroup
+  #   Properties:
+  #     Description: CloudFormation Sample Aurora Parameter Group
+  #     Family: aurora5.6
+  #     Parameters:
+  #       sql_mode: IGNORE_SPACE
+
+Outputs:
+  RDSClusterEndpoint:
+    Value:
+      Fn::GetAtt: 
+        - RDSCluster
+        - Endpoint.Address
+  RDSClusterPort:
+    Value:
+      Fn::GetAtt: 
+        - RDSCluster
+        - Endpoint.Port
+  RDSDatabaseName:
+    Value: ${self:custom.rds.DatabaseName}

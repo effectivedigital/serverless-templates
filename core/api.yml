@@ -1,0 +1,15 @@
+Resources:
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: ${self:service}-${opt:stage, 'dev'}
+Outputs:
+  RestApiId:
+    Value: 
+      Ref: RestApi
+
+  RestApiRootId:
+    Value:
+      Fn::GetAtt:
+        - RestApi
+        - RootResourceId

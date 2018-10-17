@@ -1,0 +1,46 @@
+Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: ${self:service}-${opt:stage, 'dev'}
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      Schema:
+        - 
+          Name: given_name
+          Required: false
+        - 
+          Name: family_name
+          Required: false
+        - 
+          Name: email
+          Required: true
+        - 
+          Name: phone_number
+          Required: false
+        -
+          Name: companyId
+          AttributeDataType: String
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: 
+        Ref: CognitoUserPool
+      GenerateSecret: false
+
+Outputs:
+  CognitoUserPoolId:
+    Value:
+      Ref: CognitoUserPool
+
+  CognitoUserPoolClientId:
+    Value:
+      Ref: CognitoUserPoolClient

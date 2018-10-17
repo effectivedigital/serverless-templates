@@ -1,0 +1,58 @@
+websiteBucketName: { Ref: WebsiteBucket }
+domain: yourappsite.com
+cloudfront:
+  aliases:
+    dev:
+      - Fn::Join:
+        - ''
+        - - app-
+          - ${opt:stage, 'dev'}-
+          - { Ref: AWS::AccountId }
+          - .${self:custom.domain}
+    staging:
+      - Fn::Join:
+        - ''
+        - - app-
+          - ${opt:stage, 'staging'}-
+          - { Ref: AWS::AccountId } 
+          - .${self:custom.domain}
+    prod:
+      - ${self:custom.domain}
+      - www.${self:custom.domain}
+  certificates:
+    dev:
+      CloudFrontDefaultCertificate: 'true'
+    staging:
+      CloudFrontDefaultCertificate: 'true'
+    prod:
+      # Create SSL Certificate in AWS Console first and update ARN here
+      # AcmCertificateArn: arn:aws:acm:us-east-1:619061604087:certificate/903c2548-d5f5-4fea-af1f-3f2bd1aeff92
+      # SslSupportMethod: sni-only
+      CloudFrontDefaultCertificate: 'true'
+vpcConfig:
+  dev:
+    ${file(vpcConfig.yml)}
+  staging:
+    vpcId: vpc-xxxxxxxx
+    subnetId:
+      - subnet-xxxxxxxx
+      - subnet-xxxxxxxx
+      - subnet-xxxxxxxx
+  prod:
+    vpcId: vpc-xxxxxxxx
+    subnetId:
+      - subnet-xxxxxxxx
+      - subnet-xxxxxxxx
+      - subnet-xxxxxxxx
+InstallVpcId: ${self:custom.vpcConfig.${opt:stage, 'dev'}.vpcId}
+rds:
+  DatabaseName: ${self:service}${opt:stage, 'dev'}
+  dev:
+    username: "root"
+    password: "xxxxxxxx"
+  staging:
+    username: "root"
+    password: "xxxxxxxx"
+  prod:
+    username: "root"
+    password: "xxxxxxxx"
