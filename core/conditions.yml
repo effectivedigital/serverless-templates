@@ -1,0 +1,5 @@
+Conditions:
+  ProdEnv:
+    Fn::Equals: 
+    - ${opt:stage}
+    - prod
