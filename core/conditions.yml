@@ -1,5 +1,5 @@
 Conditions:
   ProdEnv:
     Fn::Equals: 
-    - ${opt:stage}
+    - ${opt:stage, 'dev'}
     - prod
