@@ -32,7 +32,7 @@ Resources:
               Fn::Join:
                 - ''
                 - - Ref: WebsiteBucket
-                  - .s3 # This needs to be changed to additional string if using outside of us-east-1: s3-${self:provider.region}
+                  - .s3 # This needs to be changed to additional string if using outside of us-east-1: s3-${self:provider.region} or if using a non SPA type site, use the s3 website url: s3-website-${self:provider.region}
                   - .amazonaws.com
             Id: WebApp
             CustomOriginConfig:
