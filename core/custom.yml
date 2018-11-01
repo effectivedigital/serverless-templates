@@ -44,7 +44,6 @@ vpcConfig:
       - subnet-xxxxxxxx
       - subnet-xxxxxxxx
       - subnet-xxxxxxxx
-InstallVpcId: ${self:custom.vpcConfig.${opt:stage, 'dev'}.vpcId}
 rds:
   DatabaseName: ${self:service}${opt:stage, 'dev'}
   dev:
