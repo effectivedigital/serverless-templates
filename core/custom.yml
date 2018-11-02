@@ -34,12 +34,16 @@ vpcConfig:
     ${file(vpcConfig.yml)}
   staging:
     vpcId: vpc-xxxxxxxx
+    securityGroupIds: 
+      - sg-xxxxxxxx
     subnetId:
       - subnet-xxxxxxxx
       - subnet-xxxxxxxx
       - subnet-xxxxxxxx
   prod:
     vpcId: vpc-xxxxxxxx
+    securityGroupIds: 
+      - sg-xxxxxxxx
     subnetId:
       - subnet-xxxxxxxx
       - subnet-xxxxxxxx
