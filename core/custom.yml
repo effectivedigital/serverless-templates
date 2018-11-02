@@ -31,7 +31,7 @@ cloudfront:
       CloudFrontDefaultCertificate: 'true'
 vpcConfig:
   dev:
-    ${file(vpcConfig.yml)}
+    ${file(../core/vpcConfig.yml)}
   staging:
     vpcId: vpc-xxxxxxxx
     securityGroupIds: 
