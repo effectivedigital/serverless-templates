@@ -16,6 +16,8 @@ provider:
     restApiId: ${cf:${file(../core/serverless.yml):service}-${opt:stage, 'dev'}.RestApiId}
     restApiRootResourceId: ${cf:${file(../core/serverless.yml):service}-${opt:stage, 'dev'}.RestApiRootId}
 
+  logRetentionInDays: 90
+  
   # environment:
   #   variable: here
 
