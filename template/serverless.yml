@@ -115,3 +115,4 @@ functions:
 # you can add CloudFormation resource templates here
 resources:
   ${file(dynamodb.yml)}
+  ${file(s3.yml)}
