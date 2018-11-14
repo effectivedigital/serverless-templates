@@ -26,19 +26,6 @@ JobProcessorBucket:
   Type: AWS::S3::Bucket
   Properties:
     BucketName: ${self:custom.JobProcessorBucket}
-    CorsConfiguration:
-      CorsRules:
-          - AllowedHeaders:
-              - '*'
-            AllowedMethods:
-              - PUT
-              - POST
-              - DELETE
-              - GET
-            AllowedOrigins:
-              - '*'
-      AccelerateConfiguration:
-        AccelerationStatus: Enabled
     NotificationConfiguration:
       LambdaConfigurations:
         - Event: "s3:ObjectCreated:*"
