@@ -46,9 +46,14 @@ provider:
 #     ${file(../variables/environment.yml)}
 
 # you can define service wide custom variables here
-# custom:
-#   ${file(../variables/custom.yml)}
-
+custom:
+  JobProcessorBucket:
+    Fn::Join:
+      - '-'
+      - - 'jobprocessorbucket'
+        - { Ref: AWS::AccountId }
+        - ${opt:stage, 'dev'}
+        
 # you can add packaging information here
 package:
   artifact: bin/release/netcoreapp2.1/deploy-package.zip

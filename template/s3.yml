@@ -19,3 +19,43 @@ Resources:
               - '*'
       AccelerateConfiguration:
         AccelerationStatus: Enabled
+
+JobProcessorBucket:
+  DependsOn:
+    - JobProcessorLambdaPermission
+  Type: AWS::S3::Bucket
+  Properties:
+    BucketName: ${self:custom.JobProcessorBucket}
+    CorsConfiguration:
+      CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - POST
+              - DELETE
+              - GET
+            AllowedOrigins:
+              - '*'
+      AccelerateConfiguration:
+        AccelerationStatus: Enabled
+    NotificationConfiguration:
+      LambdaConfigurations:
+        - Event: "s3:ObjectCreated:*"
+          Function:
+            "Fn::GetAtt": [ JobProcessorLambdaFunction, Arn ]
+  
+  JobProcessorLambdaPermission:
+    DependsOn:
+      - JobProcessorLambdaFunction
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        "Fn::GetAtt": [ JobProcessorLambdaFunction, Arn ]
+      Action: "lambda:InvokeFunction"
+      Principal: "s3.amazonaws.com"
+      SourceArn:
+        Fn::Join:
+          - ''
+          - - "arn:aws:s3:::"
+            - ${self:custom.JobProcessorBucket}
