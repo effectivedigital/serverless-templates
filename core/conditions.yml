@@ -3,3 +3,8 @@ Conditions:
     Fn::Equals: 
     - ${opt:stage, 'dev'}
     - prod
+
+  DevEnv:
+    Fn::Equals: 
+    - ${opt:stage, 'dev'}
+    - dev
