@@ -4,6 +4,11 @@ Conditions:
     - ${opt:stage, 'dev'}
     - prod
 
+  StagingEnv:
+    Fn::Equals: 
+    - ${opt:stage, 'dev'}
+    - staging
+
   DevEnv:
     Fn::Equals: 
     - ${opt:stage, 'dev'}
