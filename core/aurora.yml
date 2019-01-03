@@ -15,7 +15,7 @@ Resources:
           FromPort: 3306
           ToPort: 3306
           CidrIp: 0.0.0.0/0
-      VpcId: ${self:custom.vpcConfig.${opt:stage, 'dev'}.vpcId}
+      VpcId: ${self:custom.system.vpcConfig.${opt:stage, 'dev'}.vpcId}
 
   RDSSubnetGroup:
     Type: "AWS::RDS::DBSubnetGroup"
@@ -23,15 +23,15 @@ Resources:
       DBSubnetGroupDescription: "Subnets for the RDS"
       DBSubnetGroupName: "${self:service}-${opt:stage, 'dev'}-subnetgroup"
       SubnetIds:  
-        ${self:custom.vpcConfig.${opt:stage, 'dev'}.subnetId}
+        ${self:custom.system.vpcConfig.${opt:stage, 'dev'}.subnetId}
 
   RDSCluster:
     Type: AWS::RDS::DBCluster
     Properties:
       DBClusterIdentifier: "${self:service}-${opt:stage, 'dev'}-cluster"
-      DatabaseName: ${self:custom.rds.DatabaseName}
-      MasterUsername: ${self:custom.rds.${opt:stage, 'dev'}.username}
-      MasterUserPassword: ${self:custom.rds.${opt:stage, 'dev'}.password}
+      DatabaseName: ${self:custom.system.rds.DatabaseName}
+      MasterUsername: ${self:custom.system.rds.${opt:stage, 'dev'}.username}
+      MasterUserPassword: ${self:custom.system.rds.${opt:stage, 'dev'}.password}
       Engine: aurora
       DBSubnetGroupName: 
         Ref: RDSSubnetGroup      
@@ -92,4 +92,4 @@ Outputs:
         - RDSCluster
         - Endpoint.Port
   RDSDatabaseName:
-    Value: ${self:custom.rds.DatabaseName}
+    Value: ${self:custom.system.rds.DatabaseName}
