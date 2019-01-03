@@ -3,12 +3,17 @@ Resources:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: ${self:service}-${opt:stage, 'dev'}
+      
 Outputs:
   RestApiId:
+    Export:
+      Name: RestApiId-${opt:stage, 'dev'}
     Value: 
       Ref: RestApi
 
   RestApiRootId:
+    Export:
+      Name: RestApiRootId-${opt:stage, 'dev'}
     Value:
       Fn::GetAtt:
         - RestApi

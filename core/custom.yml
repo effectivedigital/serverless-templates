@@ -8,17 +8,17 @@ cloudfront:
         - - app-
           - ${opt:stage, 'dev'}-
           - { Ref: AWS::AccountId }
-          - .${self:custom.domain}
+          - .${self:custom.system.domain}
     staging:
       - Fn::Join:
         - ''
         - - app-
           - ${opt:stage, 'staging'}-
           - { Ref: AWS::AccountId } 
-          - .${self:custom.domain}
+          - .${self:custom.system.domain}
     prod:
-      - ${self:custom.domain}
-      - www.${self:custom.domain}
+      - ${self:custom.system.domain}
+      - www.${self:custom.system.domain}
   certificates:
     dev:
       CloudFrontDefaultCertificate: 'true'
@@ -31,7 +31,7 @@ cloudfront:
       CloudFrontDefaultCertificate: 'true'
 vpcConfig:
   dev:
-    ${file(../core/vpcConfig.yml)}
+    ${file(${self:custom.PathToSystemCore}vpcConfig.yml)}
   staging:
     vpcId: vpc-xxxxxxxx
     securityGroupIds: 

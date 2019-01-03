@@ -11,10 +11,12 @@ service: template # NOTE: update this with your service name
 provider:
   name: aws
   runtime: dotnetcore2.1
-  region: ${file(../core/serverless.yml):provider.region}
+  region: ${file(${self:custom.PathToSystemCore}serverless.yml):provider.region}
   apiGateway:
-    restApiId: ${cf:${file(../core/serverless.yml):service}-${opt:stage, 'dev'}.RestApiId}
-    restApiRootResourceId: ${cf:${file(../core/serverless.yml):service}-${opt:stage, 'dev'}.RestApiRootId}
+    restApiId: 
+      Fn::ImportValue: RestApiId-${opt:stage, 'dev'}
+    restApiRootResourceId: 
+      Fn::ImportValue: RestApiRootId-${opt:stage, 'dev'}
 
   logRetentionInDays: 90
   
@@ -47,6 +49,7 @@ provider:
 
 # you can define service wide custom variables here
 custom:
+  PathToSystemCore: "../core/"
   JobProcessorBucket:
     Fn::Join:
       - '-'

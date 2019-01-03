@@ -6,7 +6,8 @@ provider:
   region: us-east-1
 
 custom:
-  ${file(custom.yml)}
+  PathToSystemCore: ""
+  system: ${file(custom.yml)}
 
 resources:
   # - ${file(conditions.yml)} 
