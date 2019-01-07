@@ -16,8 +16,11 @@ exports.handler =  function(event, context, callback) {
 
     //Set up the request to retrieve the token encryption key
     var req = {
-        Names: [process.env.key],
-        WithDecryption: process.env.IsEncrypted == "false" ? false : true
+        Names: [
+            [process.env.key],
+            [process.env.Algorithm]
+        ],
+        WithDecryption: true
       };
 
     //Retrieve the encryption key from the Stored Parameter
@@ -29,7 +32,7 @@ exports.handler =  function(event, context, callback) {
         }
 
         //Key has been retrieved. Next is to verify the token. The verify will confirm that the token is valid prior to decoding it.
-        jwt.verify(token, data.Parameters[0].Value,{ algorithms: [process.env.Algorithm] }, function(err, decoded) {
+        jwt.verify(token, data.Parameters[0].Value,{ algorithms: [data.Parameters[1].Value] }, function(err, decoded) {
             var policyType = 'Deny';
             
             //Check if there was an error during the verify process. If so, auto Deny access to the API
