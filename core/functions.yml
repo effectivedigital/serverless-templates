@@ -1,0 +1,8 @@
+Authoriser:
+  description: "Handles authorisation of the connection to determine if the API can be executed"
+  handler: authoriser.handler
+  environment:
+    key: "/${file(../core/serverless.yml):service}/${opt:stage, 'dev'}/AuthoriserJWTKey"
+    CheckField: "authorised"
+    IsEncrypted: true
+    Algorithm: "HS256"

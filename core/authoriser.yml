@@ -1,0 +1,38 @@
+Resources:
+  ApiGatewayAuthorizer: 
+    Type: AWS::ApiGateway::Authorizer
+    Properties: 
+      AuthorizerResultTtlInSeconds: 300
+      IdentitySource: method.request.header.Authorization
+      Name: JWTAuthoriser
+      RestApiId: 
+        Ref: RestApi
+      Type: TOKEN 
+      AuthorizerUri: 
+        Fn::Join:
+          - ":"
+          - - arn
+            - aws
+            - apigateway
+            - Ref: AWS::Region
+            - lambda
+            - Fn::Join:
+              - ''
+              - - path/2015-03-31/functions/
+                - Fn::Join:
+                  - ":"
+                  - - arn
+                    - aws
+                    - lambda
+                    - Ref: AWS::Region
+                    - Ref: AWS::AccountId
+                    - function
+                    - ${self:service}-${opt:stage,"dev"}-Authoriser
+                - /invocations
+                
+Outputs:
+  JWTAuthoriser:
+    Export:
+      Name: JTAuthoriser-${opt:stage, 'dev'}
+    Value:
+      Ref: ApiGatewayAuthorizer

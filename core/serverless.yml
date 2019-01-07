@@ -9,9 +9,13 @@ custom:
   PathToSystemCore: ""
   system: ${file(custom.yml)}
 
+# functions:
+#   - ${file(functions.yml)}
+
 resources:
   # - ${file(conditions.yml)} 
   - ${file(cognito.yml)}
   - ${file(api.yml)} 
+  #- ${file(authoriser.yml)}
   - ${file(website.yml)} 
   - ${file(aurora.yml)}

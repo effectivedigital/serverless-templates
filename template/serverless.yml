@@ -65,29 +65,7 @@ package:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: CsharpHandlers::Namespace.Handler::FunctionHandler
-    events:
-      - http:
-          path: ${self:service}/hello
-          method: get
-          integration: lambda
-          cors: true
-
-  helloParameters:
-    handler: CsharpHandlers::Namespace.Handler::FunctionHandler
-    events:
-      - http:
-          path: ${self:service}/hello/{id}
-          method: get
-          integration: lambda
-          cors: true
-          request:
-            parameters:
-              paths:
-                id: true
-              querystrings:
-                resultslimit: false
+  - ${file(functions.yml)}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -124,5 +102,5 @@ functions:
 
 # you can add CloudFormation resource templates here
 resources:
-  ${file(dynamodb.yml)}
-  ${file(s3.yml)}
+  - ${file(dynamodb.yml)}
+  - ${file(s3.yml)}
