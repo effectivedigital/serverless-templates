@@ -12,19 +12,20 @@ Resources:
       Schema:
         - 
           Name: given_name
-          Required: false
+          Required: true
+          Mutable: true
         - 
           Name: family_name
-          Required: false
+          Required: true
+          Mutable: true
         - 
           Name: email
           Required: true
+          Mutable: true
         - 
-          Name: phone_number
-          Required: false
-        -
           Name: companyId
           AttributeDataType: String
+          Mutable: true
           StringAttributeConstraints:
             MinLength: 1
             MaxLength: 256
@@ -34,7 +35,56 @@ Resources:
     Properties:
       UserPoolId: 
         Ref: CognitoUserPool
+      ReadAttributes:
+        - address
+        - birthdate
+        - custom:companyId
+        - custom:workgroupId
+        - email
+        - family_name
+        - gender
+        - given_name
+        - locale
+        - middle_name
+        - name
+        - nickname
+        - phone_number
+        - picture
+        - preferred_username
+        - profile
+        - updated_at
+        - website
+        - zoneinfo
+        - email_verified
+        - phone_number_verified
+      WriteAttributes:
+        - address
+        - birthdate
+        - custom:companyId
+        - custom:workgroupId
+        - email
+        - family_name
+        - gender
+        - given_name
+        - locale
+        - middle_name
+        - name
+        - nickname
+        - phone_number
+        - picture
+        - preferred_username
+        - profile
+        - updated_at
+        - website
+        - zoneinfo
       GenerateSecret: false
+
+  CognitoUserGroupsGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: GroupName
+      UserPoolId: 
+        Ref: CognitoUserPool
 
 Outputs:
   CognitoUserPoolId:
@@ -44,3 +94,15 @@ Outputs:
   CognitoUserPoolClientId:
     Value:
       Ref: CognitoUserPoolClient
+
+  CognitoUserPoolArn:
+    Value:
+      Fn::Join:
+        - ''
+        - - 'arn:aws:cognito-idp:'
+          - ${file(../core/serverless.yml):provider.region}
+          - ':'
+          - { Ref: AWS::AccountId }
+          - ':'
+          - 'userpool/'
+          - { Ref: CognitoUserPool }
