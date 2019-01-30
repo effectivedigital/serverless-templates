@@ -1,0 +1,10 @@
+Conditions:
+  ProdStagingEnv:
+    Fn::Or:
+      - Fn::Equals: 
+        - ${opt:stage, 'dev'}
+        - prod
+      - Fn::Equals: 
+        - ${opt:stage, 'dev'}
+        - staging
+    

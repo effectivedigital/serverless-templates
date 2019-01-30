@@ -1,0 +1,65 @@
+service: mobileversionchecker
+
+# plugins:
+#   - serverless-domain-manager
+
+provider:
+  name: aws
+  runtime: dotnetcore2.1
+  region: ap-southeast-2
+  # apiGateway:
+  #   restApiId: 
+  #     Fn::ImportValue: RestApiId-${opt:stage, 'dev'}
+  #   restApiRootResourceId: 
+  #     Fn::ImportValue: RestApiRootId-${opt:stage, 'dev'}
+
+  logRetentionInDays: 90
+
+  # environment:
+  #   variable: here
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# or you can add iam managed policies by their ARN
+#  iamManagedPolicies:
+#    -   - 'some:aws:arn:xxx:*:*'
+
+custom:
+  PathToSystemCore: ""
+  system: ${file(custom.yml)}
+  # customDomain:
+  #   domainName: ${self:custom.system.domain.${opt:stage, 'dev'}}
+  #   stage: ${opt:stage, 'dev'}
+  #   basePath: ''
+  #   certificateArn: 'arn:aws:acm:us-east-1:881539945095:certificate/eef36209-68b4-46ea-8545-efbd098f5e48'
+  #   createRoute53Record: false
+  #   endpointType: 'edge'
+
+# you can add packaging information here
+package:
+  artifact: bin/release/netcoreapp2.1/deploy-package.zip
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
+functions:
+  - ${file(functions.yml)}
+
+resources:
+  - ${file(conditions.yml)} 
+  - ${file(api.yml)} 
+  - ${file(dynamodb.yml)}

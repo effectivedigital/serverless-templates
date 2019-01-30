@@ -1,0 +1,204 @@
+# This is an example table template which includes secondary index and autoscaling for read and write capacity on both the table and the indexes.
+# The term TableName should be replaced in all locations for each table
+# IndexName is used as the index name for the example global secondary index, this should be named along the lines of what the index is 
+# doing (eg. companyId-Index) and then updated in the auto scaling policies.
+
+# The capacities and scaling targets are independant for each table, index and method type (read or write).  This need to be tuned over time with usage, items set are fine for development.
+
+# It's good practise outputting the table name in your stack outputs and referencing them as environment variables for use in your Lambda functions
+
+Resources:
+  TableName:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:service}-TableName-${opt:stage, 'dev'}
+      AttributeDefinitions:
+        -
+          AttributeName: "ArtistId"
+          AttributeType: "S"
+        -
+          AttributeName: "Concert"
+          AttributeType: "S"
+        -
+          AttributeName: "TicketSales"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "ArtistId"
+          KeyType: "HASH"
+        -
+          AttributeName: "Concert"
+          KeyType: "RANGE"
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "IndexName"
+          KeySchema:
+            -
+              AttributeName: "TicketSales"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  TableNameReadCapacityScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 15
+      MinCapacity: 1
+      ResourceId:
+        Fn::Join:
+          - /
+          - - table
+            - { Ref: TableName }
+      RoleARN:
+        Fn::GetAtt:
+          ScalingRole.Arn
+      ScalableDimension: dynamodb:table:ReadCapacityUnits
+      ServiceNamespace: dynamodb
+
+  TableNameWriteCapacityScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 15
+      MinCapacity: 1
+      ResourceId:
+        Fn::Join:
+          - /
+          - - table
+            - { Ref: TableName }
+      RoleARN:
+        Fn::GetAtt:
+          ScalingRole.Arn
+      ScalableDimension: dynamodb:table:WriteCapacityUnits
+      ServiceNamespace: dynamodb
+
+  TableNameReadScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: TableNameReadAutoScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: { Ref: TableNameReadCapacityScalableTarget }
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 50.0
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+  TableNameWriteScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: TableNameWriteAutoScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: { Ref: TableNameWriteCapacityScalableTarget }
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 50.0
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+  IndexNameTableNameReadCapacityScalableTarget: 
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties: 
+      MaxCapacity: 15
+      MinCapacity: 1
+      ResourceId:
+        Fn::Join:
+          - /
+          - - table
+            - { Ref: TableName }
+            - index
+            - IndexName
+      RoleARN:
+        Fn::GetAtt:
+          ScalingRole.Arn
+      ScalableDimension: "dynamodb:index:ReadCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  IndexNameTableNameWriteCapacityScalableTarget: 
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties: 
+      MaxCapacity: 15
+      MinCapacity: 1
+      ResourceId:
+        Fn::Join:
+          - /
+          - - table
+            - { Ref: TableName }
+            - index
+            - IndexName
+      RoleARN:
+        Fn::GetAtt:
+          ScalingRole.Arn
+      ScalableDimension: "dynamodb:index:WriteCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  IndexNameTableNameReadScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: IndexNameTableNameReadAutoScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: { Ref: IndexNameTableNameReadCapacityScalableTarget }
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 50.0
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+  IndexNameTableNameWriteScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: IndexNameTableNameWriteAutoScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: { Ref: IndexNameTableNameWriteCapacityScalableTarget }
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 50.0
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+  # A scaling policy only needs to be defined once, do not copy this section.
+  ScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - application-autoscaling.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        -
+          PolicyName: "root"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "dynamodb:DescribeTable"
+                  - "dynamodb:UpdateTable"
+                  - "cloudwatch:PutMetricAlarm"
+                  - "cloudwatch:DescribeAlarms"
+                  - "cloudwatch:GetMetricStatistics"
+                  - "cloudwatch:SetAlarmState"
+                  - "cloudwatch:DeleteAlarms"
+                Resource: "*"
+
+Outputs:
+  TableName:
+    Value:
+      Ref: TableName

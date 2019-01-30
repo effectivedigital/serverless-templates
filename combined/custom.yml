@@ -1,0 +1,3 @@
+domain:
+  staging: "subdomain-${opt:stage, 'dev'}.domain.com"
+  prod: "subdomain.domain.com"

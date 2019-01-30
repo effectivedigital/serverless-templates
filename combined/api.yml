@@ -1,0 +1,29 @@
+#For custom domain on API
+Resources:
+  Domain:
+    Type: AWS::ApiGateway::DomainName
+    Condition: ProdStagingEnv
+    Properties:
+      DomainName: ${self:custom.system.domain.${opt:stage, 'dev'}}
+      EndpointConfiguration:
+        Types:
+          - EDGE
+      CertificateArn: 'arn:aws:acm:REGION:ACCOUNT:certificate/CERTIFICATE'
+
+  ApiGatewayDeployment:
+    Type: "AWS::ApiGateway::Deployment"
+    Condition: ProdStagingEnv
+    DependsOn: Domain
+    Properties:
+      Description: "Environment"
+      RestApiId: { Ref: ApiGatewayRestApi }
+      StageName: "dev"
+    
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Condition: ProdStagingEnv
+    DependsOn: ApiGatewayDeployment
+    Properties:
+      DomainName: ${self:custom.system.domain.${opt:stage, 'dev'}}
+      RestApiId: { Ref: ApiGatewayRestApi }
+      Stage: "dev"
