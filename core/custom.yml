@@ -2,20 +2,6 @@ websiteBucketName: { Ref: WebsiteBucket }
 domain: yourappsite.com
 cloudfront:
   aliases:
-    dev:
-      - Fn::Join:
-        - ''
-        - - app-
-          - ${opt:stage, 'dev'}-
-          - { Ref: AWS::AccountId }
-          - .${self:custom.system.domain}
-    staging:
-      - Fn::Join:
-        - ''
-        - - app-
-          - ${opt:stage, 'staging'}-
-          - { Ref: AWS::AccountId } 
-          - .${self:custom.system.domain}
     prod:
       - ${self:custom.system.domain}
       - www.${self:custom.system.domain}

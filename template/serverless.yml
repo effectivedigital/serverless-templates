@@ -23,6 +23,10 @@ provider:
   # environment:
   #   variable: here
 
+  # or you can define service wide environment variables here
+  # environment:
+  #   ${file(environment.yml)}
+
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
 #    - Effect: "Allow"
@@ -41,11 +45,7 @@ provider:
 
 # or you can add iam managed policies by their ARN
 #  iamManagedPolicies:
-#    -   - 'some:aws:arn:xxx:*:*'
-
-# you can define service wide environment variables here
-#   environment:
-#     ${file(../variables/environment.yml)}
+#    - 'some:aws:arn:xxx:*:*'
 
 # you can define service wide custom variables here
 custom:
@@ -65,7 +65,33 @@ package:
 #    - exclude-me-dir/**
 
 functions:
-  - ${file(functions.yml)}
+  hello:
+    handler: CsharpHandlers::Namespace.Handler::FunctionHandler
+    events:
+      - http:
+          path: ${self:service}/hello
+          method: get
+          integration: lambda
+          cors: true
+
+  helloParameters:
+    handler: CsharpHandlers::Namespace.Handler::FunctionHandler
+    events:
+      - http:
+          path: ${self:service}/hello/{id}
+          method: get
+          integration: lambda
+          cors: true
+          # authorizer:
+          #   type: CUSTOM
+          #   authorizerId: 
+          #     Fn::ImportValue: JWTAuthoriser-${opt:stage, 'dev'}
+          request:
+            parameters:
+              paths:
+                id: true
+              querystrings:
+                resultslimit: false
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -95,10 +121,6 @@ functions:
 #      - cognitoUserPool:
 #          pool: MyUserPool
 #          trigger: PreSignUp
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
 
 # you can add CloudFormation resource templates here
 resources:

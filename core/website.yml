@@ -40,7 +40,8 @@ Resources:
               HTTPSPort: 443
               OriginProtocolPolicy: https-only
         Enabled: 'true'
-        Aliases: ${self:custom.system.cloudfront.aliases.${opt:stage, 'dev'}}
+        Aliases:
+          Fn::If: [ProdEnv, "${self:custom.system.cloudfront.aliases.prod}", Ref: "AWS::NoValue"]
         HttpVersion: http2
         ViewerCertificate: ${self:custom.system.cloudfront.certificates.${opt:stage, 'dev'}}
         DefaultRootObject: index.html
