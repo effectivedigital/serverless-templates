@@ -1,3 +1,6 @@
 domain:
   staging: "subdomain-${opt:stage, 'dev'}.domain.com"
   prod: "subdomain.domain.com"
+apiDomain: 
+  staging: "api-${opt:stage, 'dev'}.domain.com"
+  prod: "api.domain.com"

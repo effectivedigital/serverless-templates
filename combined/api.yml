@@ -4,7 +4,7 @@ Resources:
     Type: AWS::ApiGateway::DomainName
     Condition: ProdStagingEnv
     Properties:
-      DomainName: ${self:custom.system.domain.${opt:stage, 'dev'}}
+      DomainName: ${self:custom.system.apiDomain.${opt:stage, 'dev'}}
       EndpointConfiguration:
         Types:
           - EDGE
@@ -24,6 +24,6 @@ Resources:
     Condition: ProdStagingEnv
     DependsOn: ApiGatewayDeployment
     Properties:
-      DomainName: ${self:custom.system.domain.${opt:stage, 'dev'}}
+      DomainName: ${self:custom.system.apiDomain.${opt:stage, 'dev'}}
       RestApiId: { Ref: ApiGatewayRestApi }
       Stage: "dev"

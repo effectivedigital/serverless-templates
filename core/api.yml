@@ -3,6 +3,35 @@ Resources:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: ${self:service}-${opt:stage, 'dev'}
+
+  #For custom domain on API
+  Domain:
+    Type: AWS::ApiGateway::DomainName
+    Condition: ProdEnv
+    Properties:
+      DomainName: ${self:custom.system.apiDomain}
+      EndpointConfiguration:
+        Types:
+          - EDGE
+      CertificateArn: 'arn:aws:acm:REGION:ACCOUNT:certificate/CERTIFICATE'
+
+  ApiGatewayDeployment:
+    Type: "AWS::ApiGateway::Deployment"
+    Condition: ProdEnv
+    DependsOn: Domain
+    Properties:
+      Description: "Environment"
+      RestApiId: { Ref: ApiGatewayRestApi }
+      StageName: "prod"
+    
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Condition: ProdEnv
+    DependsOn: ApiGatewayDeployment
+    Properties:
+      DomainName: ${self:custom.system.apiDomain}
+      RestApiId: { Ref: ApiGatewayRestApi }
+      Stage: "prod"
       
 Outputs:
   RestApiId:
